@@ -19,4 +19,6 @@ RUN apt-get update && apt-get -y dist-upgrade && \
     rm -rf $DIR && \
     rm -rf /var/lib/apt/lists* 
 
+COPY bin/entrypoint.sh /
+
 ENTRYPOINT ["/entrypoint.sh"]
