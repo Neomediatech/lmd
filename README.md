@@ -1,8 +1,8 @@
-# Description
+## Description
 Linux Malware Detection (LMD) dockerized on Ubuntu.
 The project is located [here](https://github.com/rfxn/linux-malware-detect).
 
-# Docker run
+## Docker run
 (Work In Progress)
 docker run --rm -it -v /dir/to/scan:/scan neomediatech/lmd
 
@@ -10,7 +10,7 @@ and then scan:
 
 /usr/local/maldetect/maldet -a /scan
 
-# CLI usage
+## CLI usage
 You can run it through the 'maldet' command, the '--help'
 option gives a detailed summary of usage options:
 
