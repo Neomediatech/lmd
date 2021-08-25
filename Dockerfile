@@ -20,5 +20,6 @@ RUN apt-get update && apt-get -y dist-upgrade && \
     rm -rf /var/lib/apt/lists* 
 
 COPY bin/entrypoint.sh /
+RUN chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
