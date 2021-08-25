@@ -8,6 +8,11 @@ The project is located [here](https://github.com/rfxn/linux-malware-detect).
 and then:  
 `maldet -a /scan`
 
+To retain signatures, logs and reports:  
+`LPATH="/srv/docker/containers/lmd/data" ; docker run --rm -it -v /dir/to/scan:/scan -v $LPATH/sigs/:/usr/local/maldetect/sigs/ -v $LPATH/sess/:/usr/local/maldetect/sess/ -v $LPATH/logs/:/usr/local/maldetect/logs/ neomediatech/lmd `
+
+
+
 ## CLI usage
 You can run it through the 'maldet' command, the '--help'
 option gives a detailed summary of usage options:
