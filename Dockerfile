@@ -18,3 +18,5 @@ RUN apt-get update && apt-get -y dist-upgrade && \
     cd .. && \
     rm -rf $DIR && \
     rm -rf /var/lib/apt/lists* 
+
+ENTRYPOINT ["/entrypoint.sh"]
