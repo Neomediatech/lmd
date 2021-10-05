@@ -11,7 +11,7 @@ LABEL maintainer="docker-dario@neomediatech.it" \
 
 RUN apt-get update && apt-get -y dist-upgrade && \
     apt-get install -y --no-install-recommends curl bash perl wget ca-certificates bsdmainutils vim-tiny \
-    clamav clamav-daemon && \
+    clamav clamav-daemon clamdscan && \
     curl http://www.rfxn.com/downloads/maldetect-current.tar.gz | tar -xz && \
     DIR=$(find -iname 'maldet*' | awk -F '/' '{print $2}' | head -1) && \
     cd $DIR && \
