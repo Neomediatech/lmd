@@ -11,7 +11,7 @@ LABEL maintainer="docker-dario@neomediatech.it" \
 
 RUN apt-get update && apt-get -y dist-upgrade && \
     apt-get install -y --no-install-recommends curl bash perl wget ca-certificates bsdmainutils vim-tiny \
-    clamav clamav-daemon clamdscan && \
+    clamav clamav-daemon clamdscan bind9-host rsync && \
     curl http://www.rfxn.com/downloads/maldetect-current.tar.gz | tar -xz && \
     DIR=$(find -iname 'maldet*' | awk -F '/' '{print $2}' | head -1) && \
     cd $DIR && \
@@ -20,8 +20,17 @@ RUN apt-get update && apt-get -y dist-upgrade && \
     rm -rf $DIR && \
     mkdir -p /var/run/clamav && \
     chown clamav:clamav /var/run/clamav && \
+    BASE_URL="https://raw.githubusercontent.com/extremeshok/clamav-unofficial-sigs/master" && \
+    cd / && \
+    curl --fail --show-error --location --output clamav-unofficial-sigs.sh -- ${BASE_URL}/clamav-unofficial-sigs.sh && \
+    chmod +x clamav-unofficial-sigs.sh && \
+    mkdir -p /etc/clamav-unofficial-sigs && \
+    cd /etc/clamav-unofficial-sigs && \
+    curl --fail --show-error --location --output master.conf -- ${BASE_URL}/config/master.conf && \
+    curl --fail --show-error --location --output user.conf   -- ${BASE_URL}/config/user.conf && \
     rm -rf /var/lib/apt/lists* 
 
+COPY conf/os.conf /etc/clamav-unofficial-sigs/
 COPY bin/entrypoint.sh /
 RUN chmod +x /entrypoint.sh
 
