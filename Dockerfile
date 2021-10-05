@@ -10,13 +10,16 @@ LABEL maintainer="docker-dario@neomediatech.it" \
       org.label-schema.maintainer=Neomediatech
 
 RUN apt-get update && apt-get -y dist-upgrade && \
-    apt-get install -y --no-install-recommends curl bash perl wget ca-certificates bsdmainutils vim-tiny && \
+    apt-get install -y --no-install-recommends curl bash perl wget ca-certificates bsdmainutils vim-tiny \
+    clamav clamav-daemon && \
     curl http://www.rfxn.com/downloads/maldetect-current.tar.gz | tar -xz && \
     DIR=$(find -iname 'maldet*' | awk -F '/' '{print $2}' | head -1) && \
     cd $DIR && \
     bash install.sh && \
     cd .. && \
     rm -rf $DIR && \
+    mkdir -p /var/run/clamav && \
+    chown clamav:clamav /var/run/clamav && \
     rm -rf /var/lib/apt/lists* 
 
 COPY bin/entrypoint.sh /
