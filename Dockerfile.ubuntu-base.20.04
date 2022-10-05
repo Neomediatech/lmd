@@ -1,17 +1,17 @@
-FROM neomediatech/clamav 
+FROM neomediatech/ubuntu-base:20.04 
 
-ENV LMD_VERSION=1.6.4 \
+ENV VERSION=1.6.4 \
     SERVICE=lmd
 
 LABEL maintainer="docker-dario@neomediatech.it" \ 
-      org.label-schema.version=$LMD_VERSION \
+      org.label-schema.version=$VERSION \
       org.label-schema.vcs-type=Git \
       org.label-schema.vcs-url=https://github.com/Neomediatech/${SERVICE} \
       org.label-schema.maintainer=Neomediatech
 
 RUN apt-get update && apt-get -y dist-upgrade && \
     apt-get install -y --no-install-recommends curl bash perl wget ca-certificates bsdmainutils vim-tiny \
-    bind9-host rsync && \
+    clamav clamav-daemon clamdscan bind9-host rsync && \
     curl http://www.rfxn.com/downloads/maldetect-current.tar.gz | tar -xz && \
     DIR=$(find -iname 'maldet*' | awk -F '/' '{print $2}' | head -1) && \
     cd $DIR && \
@@ -30,10 +30,8 @@ RUN apt-get update && apt-get -y dist-upgrade && \
     curl --fail --show-error --location --output user.conf   -- ${BASE_URL}/config/user.conf && \
     rm -rf /var/lib/apt/lists* 
 
-
 COPY conf/os.conf /etc/clamav-unofficial-sigs/
 COPY bin/entrypoint.sh /
-
 RUN chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
