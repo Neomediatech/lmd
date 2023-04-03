@@ -1,6 +1,6 @@
 FROM neomediatech/ubuntu-base:20.04 
 
-ENV VERSION=1.6.4 \
+ENV VERSION=1.6.5 \
     SERVICE=lmd
 
 LABEL maintainer="docker-dario@neomediatech.it" \ 

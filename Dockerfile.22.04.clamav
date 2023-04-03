@@ -1,6 +1,6 @@
 FROM neomediatech/clamav 
 
-ENV LMD_VERSION=1.6.4 \
+ENV LMD_VERSION=1.6.5 \
     SERVICE=lmd
 
 LABEL maintainer="docker-dario@neomediatech.it" \ 
