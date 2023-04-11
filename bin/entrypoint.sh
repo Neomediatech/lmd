@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 maldet -u
-maldet -d
+#maldet -d
 
 echo "to scan a directory run (for example):"
 echo "maldet -a /var/www/clients"
