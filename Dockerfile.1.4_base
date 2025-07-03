@@ -11,7 +11,7 @@ LABEL maintainer="docker-dario@neomediatech.it" \
 
 RUN apk update && \
     apk add curl bash perl wget ca-certificates vim \
-    bind-tools rsync coreutils findutils && \
+    bind-tools rsync coreutils findutils util-linux && \
     curl http://www.rfxn.com/downloads/maldetect-current.tar.gz | tar -xz && \
     DIR=$(find -iname 'maldet*' | awk -F '/' '{print $2}' | head -1) && \
     cd $DIR && \
