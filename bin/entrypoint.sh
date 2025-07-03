@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+export PATH="$PATH:/usr/local/maldetect"
+
 maldet -u
 #maldet -d
 
