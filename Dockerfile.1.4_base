@@ -30,7 +30,6 @@ RUN apk update && \
     curl --fail --show-error --location --output user.conf   -- ${BASE_URL}/config/user.conf && \
     rm -rf /var/cache/apk/*
 
-
 COPY conf/os.conf /etc/clamav-unofficial-sigs/
 COPY bin/entrypoint.sh /
 
