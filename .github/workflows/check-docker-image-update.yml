@@ -5,6 +5,15 @@ on:
     # Esegui ogni giorno alle 04:00 UTC per controllare gli aggiornamenti.
     #- cron: '0 4 * * *'
   workflow_dispatch:
+    inputs:
+      force-build:
+        description: 'Forza la generazione delle immagini?'
+        required: true
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
 
 permissions:
   contents: write
@@ -16,9 +25,9 @@ jobs:
     uses: Neomediatech/gh-workflows/.github/workflows/build-docker-image-bulk.yml@main
     with:
       base-image: clamav/clamav
-      package-name: neomediatech/lmd
-      derived-image-prefix: ghcr.io/neomediatech/lmd
-      force-build: "false"
+      #package-name: neomediatech/lmd
+      #derived-image-prefix: ghcr.io/neomediatech/lmd
+      force-build: "${{ github.event.inputs.force-build }}"
       update-image: "true"
     secrets:
       NOTIFY_CMD: ${{ secrets.NOTIFY_CMD }}
@@ -27,3 +36,5 @@ jobs:
       NOTIFY_OPTIONS: ${{ secrets.NOTIFY_OPTIONS }}
       GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
       API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
