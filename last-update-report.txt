@@ -1,1 +1,1 @@
-gio 10 lug 2025, 13:26:58, CEST --- ghcr.io/neomediatech/lmd:1.4_base UPDATED (image build needed: true)
+mer 30 lug 2025, 10:02:57, UTC --- ghcr.io/neomediatech/lmd:1.4_base UPDATED (image build needed: true)

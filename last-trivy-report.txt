@@ -1,12 +1,12 @@
 -----------------------------------
-gio 10 lug 2025, 13:26:58, CEST --- ghcr.io/neomediatech/lmd:1.4_base
+mer 30 lug 2025, 10:02:57, UTC --- ghcr.io/neomediatech/lmd:1.4_base
 
 Report Summary
 
 ┌───────────────────────────────────────────────────┬────────┬─────────────────┬─────────┐
 │                      Target                       │  Type  │ Vulnerabilities │ Secrets │
 ├───────────────────────────────────────────────────┼────────┼─────────────────┼─────────┤
-│ ghcr.io/neomediatech/lmd:1.4_base (alpine 3.22.0) │ alpine │        0        │    -    │
+│ ghcr.io/neomediatech/lmd:1.4_base (alpine 3.22.1) │ alpine │        0        │    -    │
 └───────────────────────────────────────────────────┴────────┴─────────────────┴─────────┘
 Legend:
 - '-': Not scanned
