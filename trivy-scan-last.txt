@@ -1,4 +1,4 @@
-lun 16 nov 2026, 18:41:35, CET --- ghcr.io/neomediatech/lmd:1.4_base
+lun 16 nov 2026, 19:18:30, CET --- ghcr.io/neomediatech/lmd:1.4_base
 
 Report Summary
 
@@ -12,7 +12,7 @@ Legend:
 - '0': Clean (no security findings detected)
 
 -------------------------------------------------------
-lun 16 nov 2026, 18:41:16, CET --- ghcr.io/neomediatech/lmd:1.5_base
+lun 16 nov 2026, 19:19:01, CET --- ghcr.io/neomediatech/lmd:1.5_base
 
 Report Summary
 
@@ -26,7 +26,7 @@ Legend:
 - '0': Clean (no security findings detected)
 
 -------------------------------------------------------
-lun 16 nov 2026, 18:41:21, CET --- ghcr.io/neomediatech/lmd:latest
+lun 16 nov 2026, 19:19:01, CET --- ghcr.io/neomediatech/lmd:latest
 
 Report Summary
 
