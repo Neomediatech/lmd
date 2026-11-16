@@ -1,94 +1,43 @@
 ## Description
-Linux Malware Detection (LMD) dockerized on Ubuntu.
-The project is located [here](https://github.com/rfxn/linux-malware-detect).
+[Linux Malware Detect (LMD)](https://github.com/rfxn/linux-malware-detect) v2.x with ClamAV, dockerized on Alpine
+(base: `clamav/clamav:1.5_base`). Images are published on Docker Hub (`neomediatech/lmd`) and GHCR (`ghcr.io/neomediatech/lmd`).
+
+## Tags
+| Tag | Meaning |
+|---|---|
+| `latest` | Newest stable ClamAV (`clamav/clamav:latest_base`, now 1.5.x) + LMD 2.x |
+| `1.5_base` | ClamAV 1.5 base + LMD 2.x |
+| `1.4_base` | Legacy: ClamAV 1.4 base + LMD 1.6.x (no longer updated) |
+
+The LMD version is in the image label `org.opencontainers.image.version` (`docker inspect`) and in `maldet --version`.
+Old Ubuntu-based images (`22.04`, LMD 1.6.x) on Docker Hub are deprecated.
 
 ## Docker run
-`docker run --rm -it -v /dir/to/scan:/scan neomediatech/lmd bash`
+Scan a directory (signatures are updated at every start):
 
-and then:  
-`maldet -a /scan`
+`docker run --rm -v /dir/to/scan:/scan:ro neomediatech/lmd maldet -a /scan`
 
-To retain signatures, logs and reports:  
-`LPATH="/srv/docker/containers/lmd/data" ; docker run --rm -it -v /dir/to/scan:/scan -v $LPATH/sigs/:/usr/local/maldetect/sigs/ -v $LPATH/sess/:/usr/local/maldetect/sess/ -v $LPATH/logs/:/usr/local/maldetect/logs/ neomediatech/lmd `
+To retain signatures, logs and reports between runs (recommended: avoids re-downloading the ClamAV database):
 
+```
+LPATH="/srv/docker/containers/lmd/data"
+docker run --rm -v /dir/to/scan:/scan \
+  -v $LPATH/clamav/:/var/lib/clamav/ \
+  -v $LPATH/sigs/:/usr/local/maldetect/sigs/ \
+  -v $LPATH/sess/:/usr/local/maldetect/sess/ \
+  -v $LPATH/logs/:/usr/local/maldetect/logs/ \
+  neomediatech/lmd maldet -a /scan
+```
 
+Note: in this image `scan_ignore_root` is set to `0` (stock LMD skips files owned by root).
+JSON output of the last scan: `maldet --json-report newest`.
+
+## Environment variables
+| Variable | Default | Description |
+|---|---|---|
+| `LMD_UPDATE_CLAMAV` | `1` | Run `freshclam` at start. LMD 2.x needs the official ClamAV DB (`main.cvd`) to pass signatures to `clamscan`; set `0` only if you mount an already populated `/var/lib/clamav` |
+| `LMD_UPDATE_SIGS` | `1` | Run `maldet -u` at start |
+| `LMD_CONFIG` | empty | LMD options passed to `maldet -co`, e.g. `quarantine_hits=1,email_addr=me@example.com` |
 
 ## CLI usage
-You can run it through the 'maldet' command, the '--help'
-option gives a detailed summary of usage options:
-
-    -b, --background
-      Execute operations in the background, ideal for large scans
-      e.g: maldet -b -r /home/?/public_html 7
-
-    -u, --update [--force]
-       Update malware detection signatures from rfxn.com
-
-    -d, --update-ver [--force]
-       Update the installed version from rfxn.com
-
-    -m, --monitor USERS|PATHS|FILE
-       Run maldet with inotify kernel level file create/modify monitoring
-       If USERS is specified, monitor user homedirs for UID's > 500
-       If FILE is specified, paths will be extracted from file, line spaced
-       If PATHS are specified, must be comma spaced list, NO WILDCARDS!
-       e.g: maldet --monitor users
-       e.g: maldet --monitor /root/monitor_paths
-       e.g: maldet --monitor /home/mike,/home/ashton
-
-    -k, --kill
-       Terminate inotify monitoring service
-
-    -r, --scan-recent PATH DAYS
-       Scan files created/modified in the last X days (default: 7d, wildcard: ?)
-       e.g: maldet -r /home/?/public_html 2
-
-    -a, --scan-all PATH
-       Scan all files in path (default: /home, wildcard: ?)
-       e.g: maldet -a /home/?/public_html
-
-    -c, --checkout FILE
-       Upload suspected malware to rfxn.com for review & hashing into signatures
-
-    -l, --log
-       View maldet log file events
-
-    -e, --report SCANID email
-       View scan report of most recent scan or of a specific SCANID and optionally
-       e-mail the report to a supplied e-mail address
-       e.g: maldet --report
-       e.g: maldet --report list
-       e.g: maldet --report 050910-1534.21135
-       e.g: maldet --report SCANID user@domain.com
-
-    -E, --dump-report SCANID
-       Similar to -e/--report except dumps the report to stdout instead.
-       e.g: maldet --dump-report
-       e.g: maldet --dump-report 050910-1534.21135
-
-    -s, --restore FILE|SCANID
-       Restore file from quarantine queue to orginal path or restore all items from
-       a specific SCANID
-       e.g: maldet --restore /usr/local/maldetect/quarantine/config.php.23754
-       e.g: maldet --restore 050910-1534.21135
-
-    -q, --quarantine SCANID
-       Quarantine all malware from report SCANID
-       e.g: maldet --quarantine 050910-1534.21135
-
-    -n, --clean SCANID
-       Try to clean & restore malware hits from report SCANID
-       e.g: maldet --clean 050910-1534.21135
-
-    -U, --user USER
-       Set execution under specified user, ideal for restoring from user quarantine or
-       to view user reports.
-       e.g: maldet --user nobody --report
-       e.g: maldet --user nobody --restore 050910-1534.21135
-
-    -co, --config-option VAR1=VALUE,VAR2=VALUE,VAR3=VALUE
-       Set or redefine the value of conf.maldet config options
-       e.g: maldet --config-option email_addr=you@domain.com,quarantine_hits=1
-
-    -p, --purge
-       Clear logs, quarantine queue, session and temporary data.
+Run `maldet --help` for the full list of options (scan, monitor, quarantine, restore, reports, JSON output).
