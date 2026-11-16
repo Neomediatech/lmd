@@ -9,7 +9,7 @@
 | `1.5_base` | ClamAV 1.5 base + LMD 2.x |
 | `1.4_base` | Legacy: ClamAV 1.4 base + LMD 1.6.x (no longer updated) |
 
-The LMD version is in the image label `org.opencontainers.image.version` (`docker inspect`) and in `maldet --version`.
+LMD and clamav-unofficial-sigs are resolved to their latest GitHub release at build time, so nothing has to be bumped by hand: run the build workflow with `force-build=true` to pick up a new LMD release. The LMD version is shown by `maldet --version`.
 Old Ubuntu-based images (`22.04`, LMD 1.6.x) on Docker Hub are deprecated.
 
 ## Docker run
@@ -36,6 +36,7 @@ JSON output of the last scan: `maldet --json-report newest`.
 | Variable | Default | Description |
 |---|---|---|
 | `LMD_UPDATE_CLAMAV` | `1` | Run `freshclam` at start. LMD 2.x needs the official ClamAV DB (`main.cvd`) to pass signatures to `clamscan`; set `0` only if you mount an already populated `/var/lib/clamav` |
+| `LMD_UPDATE_UNOFFICIAL` | `1` | Run `clamav-unofficial-sigs` at start (Sanesecurity and InterServer signatures; URLhaus is disabled because abuse.ch no longer publishes its ClamAV file, no key/registration needed; providers requiring keys are disabled) |
 | `LMD_UPDATE_SIGS` | `1` | Run `maldet -u` at start |
 | `LMD_CONFIG` | empty | LMD options passed to `maldet -co`, e.g. `quarantine_hits=1,email_addr=me@example.com` |
 

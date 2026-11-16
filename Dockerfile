@@ -1,27 +1,23 @@
 FROM clamav/clamav:latest_base
 
-# LMD release pinned by version + sha256 (bump both to upgrade)
-ARG LMD_VERSION=2.0.1
-ARG LMD_SHA256=26674c72208a4c32ae4ed8770a2b5c036b35c0894a4812450df11c5a53d7d8e5
-ENV LMD_VERSION=${LMD_VERSION} \
-    SERVICE=lmd
-
 LABEL maintainer="docker-dario@neomediatech.it" \
       org.opencontainers.image.title="lmd" \
       org.opencontainers.image.description="Linux Malware Detect (LMD) with ClamAV, on Alpine" \
-      org.opencontainers.image.version="${LMD_VERSION}" \
       org.opencontainers.image.source="https://github.com/Neomediatech/lmd" \
-      org.label-schema.version="${LMD_VERSION}" \
       org.label-schema.vcs-type=Git \
       org.label-schema.vcs-url="https://github.com/Neomediatech/lmd" \
       org.label-schema.maintainer=Neomediatech
 
-# LMD 2.x no longer needs perl; GNU grep/sed/awk are required by its scan engine
-RUN apk add --no-cache bash curl ca-certificates coreutils findutils util-linux \
-        grep sed gawk procps inotify-tools bind-tools && \
+# No versions to bump: LMD and clamav-unofficial-sigs are resolved to their latest GitHub release at build time.
+# LMD 2.x does not need perl; GNU grep/sed/awk are required by its scan engine; rsync+gnupg by unofficial-sigs.
+RUN apk add --no-cache bash curl jq ca-certificates coreutils findutils util-linux \
+        grep sed gawk procps inotify-tools bind-tools rsync gnupg && \
     mkdir /tmp/lmd-src && cd /tmp/lmd-src && \
-    curl -fsSL -o lmd.tar.gz \
-        "https://github.com/rfxn/linux-malware-detect/releases/download/v${LMD_VERSION}/maldet-${LMD_VERSION}.tar.gz" && \
+    curl -fsSL https://api.github.com/repos/rfxn/linux-malware-detect/releases/latest -o release.json && \
+    LMD_URL=$(jq -r '.assets[] | select(.name | test("^maldet-.*\\.tar\\.gz$")) | .browser_download_url' release.json | head -n1) && \
+    LMD_SHA256=$(jq -r '.assets[] | select(.name | test("^maldet-.*\\.tar\\.gz$")) | .digest' release.json | head -n1 | sed 's/^sha256://') && \
+    test -n "$LMD_URL" && test -n "$LMD_SHA256" && \
+    curl -fsSL -o lmd.tar.gz "$LMD_URL" && \
     echo "${LMD_SHA256}  lmd.tar.gz" | sha256sum -c - && \
     tar -xzf lmd.tar.gz && \
     cd maldet-* && \
@@ -29,14 +25,14 @@ RUN apk add --no-cache bash curl ca-certificates coreutils findutils util-linux 
     cd / && rm -rf /tmp/lmd-src && \
     mkdir -p /var/run/clamav && \
     chown clamav:clamav /var/run/clamav && \
-    BASE_URL="https://raw.githubusercontent.com/extremeshok/clamav-unofficial-sigs/master" && \
+    UNOFF_REF=$(curl -fsSL https://api.github.com/repos/extremeshok/clamav-unofficial-sigs/releases/latest | jq -r '.tag_name // empty' || true) && \
+    BASE_URL="https://raw.githubusercontent.com/extremeshok/clamav-unofficial-sigs/${UNOFF_REF:-master}" && \
     curl --fail --show-error --location --output /clamav-unofficial-sigs.sh -- ${BASE_URL}/clamav-unofficial-sigs.sh && \
     chmod +x /clamav-unofficial-sigs.sh && \
     mkdir -p /etc/clamav-unofficial-sigs /usr/local/sbin && \
-    cd /etc/clamav-unofficial-sigs && \
-    curl --fail --show-error --location --output master.conf -- ${BASE_URL}/config/master.conf && \
-    curl --fail --show-error --location --output user.conf   -- ${BASE_URL}/config/user.conf
+    curl --fail --show-error --location --output /etc/clamav-unofficial-sigs/master.conf -- ${BASE_URL}/config/master.conf
 
+COPY conf/unofficial-sigs.user.conf /etc/clamav-unofficial-sigs/user.conf
 COPY conf/os.conf /etc/clamav-unofficial-sigs/
 COPY bin/entrypoint-lmd2.sh /entrypoint.sh
 

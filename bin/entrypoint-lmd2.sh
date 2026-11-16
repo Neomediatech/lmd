@@ -14,6 +14,11 @@ if [ "${LMD_UPDATE_CLAMAV:-1}" != "0" ]; then
   freshclam --quiet || echo "WARNING: freshclam failed, ClamAV official signatures may be missing" >&2
 fi
 
+# third-party ClamAV signatures (Sanesecurity, InterServer: no key needed)
+if [ "${LMD_UPDATE_UNOFFICIAL:-1}" != "0" ]; then
+  /clamav-unofficial-sigs.sh >/dev/null 2>&1 || echo "WARNING: clamav-unofficial-sigs failed, third-party signatures may be missing" >&2
+fi
+
 # update LMD signatures; do not abort if offline
 if [ "${LMD_UPDATE_SIGS:-1}" != "0" ]; then
   maldet -u || echo "WARNING: signature update failed, using bundled signatures" >&2
